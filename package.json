@@ -19,6 +19,7 @@
     "url": "https://github.com/buhe/getgoogletoken/issues"
   },
   "dependencies": {
-    "request": "~2.53.0"
+    "request": "~2.53.0",
+    "passport-google-id-token": "~0.2.0"
   }
 }
