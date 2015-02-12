@@ -2,7 +2,7 @@
 
 ##获取ClientId
 
-1. 进入 https://console.developers.google.com/project/252254507945/apiui/credential
+1. 进入 https://console.developers.google.com/project/xxxx/apiui/credential
 2. 创建新的用户端Id
 3. 选择第一个，浏览器
 4. 两个网址填一下 https://www.xxx.com 和 https://www.xxx.com/oauth2callback
