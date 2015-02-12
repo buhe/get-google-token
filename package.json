@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "request": "~2.53.0",
-    "passport-google-id-token": "~0.2.0"
+    "passport-google-id-token": "~0.2.0",
+    "consoler": "~0.2.0"
   }
 }
