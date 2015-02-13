@@ -9,9 +9,10 @@
 5. 浏览器输入：https://accounts.google.com/o/oauth2/auth?scope=email%20profile&state=%2Fprofile&redirect_uri=YOU_REDIRECT_URL&response_type=code&client_id=YOU_CLIENT_ID&access_type=offline   (manual,离线必须有) 
 
 ##执行Cli 获取 refresh_token 和 access_token
-npm -g install getgoogletoken
+```bash
+$ [sudo] npm -g install getgoogletoken
 getgoogletoken YOU_CODE YOU_CLIENT_ID YOU_CLIENT_SECRET YOU_REDIRECT_URL
-
+```
 ##实际执行的过程
 1. 链接跳转到  YOU_REDIRECT_URL?state=/profile&code=YOU_CODE   (auto)
 2. 于是得到了CODE
