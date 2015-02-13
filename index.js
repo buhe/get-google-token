@@ -1,4 +1,5 @@
 var request = require('request');
+var refresh = require('google-token-refresh');
 /**
  * @param {String} refreshToken is the refresh token returned from the
  *   authorization code exchange.
@@ -7,18 +8,19 @@ var request = require('request');
  *   application registration.
  * @param {Function} cb(err, {accessToken, expiresIn, idToken}, response);
  */
-exports = module.exports = refreshGoogleToken;
+exports = module.exports = getGoogleToken;
 
-function refreshGoogleToken (refreshToken, clientId, clientSecret, cb) {
+function getGoogleToken(code, clientId, clientSecret, redirect_uri, cb) {
   request.post('https://accounts.google.com/o/oauth2/token', {
     form: {
-      refresh_token: refreshToken
-    , client_id: clientId
-    , client_secret: clientSecret
-    , grant_type: 'refresh_token'
-    }
-  , json: true
-  }, function (err, res, body) {
+      code: code,
+      client_id: clientId,
+      client_secret: clientSecret,
+      redirect_uri: redirect_uri,
+      grant_type: 'authorization_code'
+    },
+    json: true
+  }, function(err, res, body) {
     // `body` should look like:
     // {
     //   "access_token":"1/fFBGRNJru1FQd44AzqT3Zg",
@@ -36,22 +38,26 @@ function refreshGoogleToken (refreshToken, clientId, clientSecret, cb) {
       return cb(null, body, res);
     }
     cb(null, {
-      accessToken: body.access_token
-    , expiresIn: body.expires_in
-    , expiresAt: +new Date + parseInt(body.expires_in, 10)
-    , idToken: body.id_token
+      accessToken: body.access_token,
+      expiresIn: body.expires_in,
+      expiresAt: +new Date + parseInt(body.expires_in, 10),
+      idToken: body.id_token,
+      refreshToken: body.refresh_token
     }, res);
   });
 }
 
-exports.checkTokenValidity = function (accessToken, refreshToken, clientId, clientSecret, cb) {
-  request({
-    url: 'https://www.googleapis.com/oauth2/v1/userinfo'
-  , qs: {alt: 'json'}
-  , json: true
-  , headers: { Authorization: 'Bearer ' + accessToken }
-  }, function (err, res, json) {
-    if (err) return cb(err, json, res);
-    cb(null, !json.error)
-  });
-};
+exports.getAndRefreshGoogleToken = function(code, clientId, clientSecret, redirect_uri, cb) {
+    getGoogleToken(code, clientId, clientSecret, redirect_uri, function(err, json, res) {
+        if (err) return handleError(err);
+        if (json.error) return handleError(new Error(res.statusCode + ': ' + json.error))
+
+        var refreshToken = json.refreshToken;
+        refresh(refreshToken, clientId, clientSecret, redirect_uri, function(err, json, res) {
+          if (err) return handleError(err);
+          if (json.error) return handleError(new Error(res.statusCode + ': ' + json.error))
+          var accessToken = json.accessToken;
+          refresh.checkTokenValidity(accessToken,cb);
+        })
+      }
+    }
