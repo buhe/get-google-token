@@ -11,7 +11,7 @@
 ##执行Cli 获取 refresh_token 和 access_token
 ```bash
 $ [sudo] npm -g install getgoogletoken
-getgoogletoken YOU_CODE YOU_CLIENT_ID YOU_CLIENT_SECRET YOU_REDIRECT_URL
+$ getgoogletoken YOU_CODE YOU_CLIENT_ID YOU_CLIENT_SECRET YOU_REDIRECT_URL
 ```
 ##实际执行的过程
 1. 链接跳转到  YOU_REDIRECT_URL?state=/profile&code=YOU_CODE   (auto)
