@@ -1,16 +1,10 @@
 var request = require('request');
-var refresh = require('google-token-refresh');
-/**
- * @param {String} refreshToken is the refresh token returned from the
- *   authorization code exchange.
- * @param {String} clientId is the client_id obtained during application registration.
- * @param {String} clientSecret is the client secret obtained during the
- *   application registration.
- * @param {Function} cb(err, {accessToken, expiresIn, idToken}, response);
- */
+var refresh = require('google-refresh-token');
+
 exports = module.exports = getGoogleToken;
 
 function getGoogleToken(code, clientId, clientSecret, redirect_uri, cb) {
+  console.log('POST --> https://accounts.google.com/o/oauth2/token')
   request.post('https://accounts.google.com/o/oauth2/token', {
     form: {
       code: code,
@@ -27,7 +21,10 @@ function getGoogleToken(code, clientId, clientSecret, redirect_uri, cb) {
     //   "expires_in":3920,
     //   "token_type":"Bearer",
     // }
-    if (err) return cb(err, body, res);
+    console.log(body)
+    if (err){
+      return cb(err, body, res);
+    } 
     if (parseInt(res.statusCode / 100, 10) !== 2) {
       if (body.error) {
         return cb(new Error(res.statusCode + ': ' + (body.error.message || body.error)), body, res);
@@ -48,16 +45,14 @@ function getGoogleToken(code, clientId, clientSecret, redirect_uri, cb) {
 }
 
 exports.getAndRefreshGoogleToken = function(code, clientId, clientSecret, redirect_uri, cb) {
-    getGoogleToken(code, clientId, clientSecret, redirect_uri, function(err, json, res) {
-        if (err) return handleError(err);
-        if (json.error) return handleError(new Error(res.statusCode + ': ' + json.error))
-
-        var refreshToken = json.refreshToken;
-        refresh(refreshToken, clientId, clientSecret, redirect_uri, function(err, json, res) {
-          if (err) return handleError(err);
-          if (json.error) return handleError(new Error(res.statusCode + ': ' + json.error))
-          var accessToken = json.accessToken;
-          refresh.checkTokenValidity(accessToken,cb);
-        })
-      }
+    getGoogleToken(code, clientId, clientSecret, redirect_uri, function(err, body, res) {
+        console.log(err)
+        if(err){
+          return cb(err,body,res);
+        }
+        var refreshToken = body.refreshToken;
+        console.log('Got refresh token:'+refreshToken+',Start try refresh token.')
+        refresh(refreshToken, clientId, clientSecret, redirect_uri, cb);
+      })
     }
+
