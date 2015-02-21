@@ -20,3 +20,4 @@ $ getgoogletoken YOU_CODE YOU_CLIENT_ID YOU_CLIENT_SECRET YOU_REDIRECT_URL
 4. 得到了 access_token 和 refresh_token (重要)
 5. https://accounts.google.com/o/oauth2/token  form 带上... 可以刷新key了 (auto)
 
+ref: http://stackoverflow.com/questions/12427479/am-i-getting-the-steps-right-for-verifying-a-users-android-in-app-subscription
